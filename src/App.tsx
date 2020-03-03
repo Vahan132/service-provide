@@ -4,10 +4,9 @@ import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 import {serviceTypes} from "./constants";
 import {getPartnersList, getServicesList, getGroupId} from "./requests"
 import {ServiceContainer} from "./components/ServiceContainer";
-import {number} from "prop-types";
 
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
     createStyles({
         formControl: {
             minWidth: 80,
@@ -109,47 +108,52 @@ function App() {
         setGroups(activeGroups);
     };
 
+    const calculateTotalPrice = (servicePrice: any, serviceId: string) => {
+        let allServicesPrice: number = 0;
+        const activeGroups: any = [...groups];
+
+        for (let group of activeGroups) {
+            let groupPrice: number = 0;
+            for (let service of group.services.list) {
+                if (service.serviceId === serviceId && !service.perPrice && servicePrice) {
+                    service.perPrice = servicePrice.perPrice;
+                }
+                if (service.count > 0) {
+                    groupPrice += service.count * service.perPrice;
+                }
+            }
+            group.groupPrice = groupPrice;
+            allServicesPrice += groupPrice;
+        }
+
+        setTotalPrice(allServicesPrice);
+    };
+
     const handleServiceEdit = (groupId: string, serviceId: string, serviceName: string, serviceCount: number) => {
         const activeGroups: any = [...groups];
         const editingGroup: any = activeGroups.find((value: any) => value.groupId === groupId);
 
         const editingService: any = editingGroup.services.list.find((value: any) => value.serviceId === serviceId);
         if (serviceName && serviceName !== "") {
-          console.log("change name")
             editingService.name = serviceName;
         }
         
         if (serviceCount) {
-          console.log("change count")
             editingService.count = serviceCount;
         }
-
-        console.log(serviceName, "serviceName")
 
         let servicePrice: any = editingGroup.serviceList.menu.find((value: any) => {
           return value.name === serviceName
         }
           );
-        editingGroup.servicePriceMap[serviceId] = editingService.count * servicePrice.perPrice;
-        let allServicesPrice: number = 0;
 
-        for (let group of activeGroups) {
-          let groupPrice: number = 0;
-          for (let service of group.services.list) {
-            if (service.serviceId === serviceId && !service.perPrice) {
-              service.perPrice = servicePrice.perPrice;
-            }
-            if (service.count > 0) {
-              groupPrice += service.count * service.perPrice; 
-            }
-          }
-          group.groupPrice = groupPrice;
-          allServicesPrice += groupPrice;
+        if (servicePrice) {
+            editingGroup.servicePriceMap[serviceId] = editingService.count * servicePrice.perPrice;
         }
 
-        debugger
-        setTotalPrice(allServicesPrice);
         setGroups(activeGroups);
+
+        calculateTotalPrice(servicePrice, serviceId);
     };
 
     const getServiceContainer = () => {
@@ -214,10 +218,9 @@ function App() {
             </Button>
         </Container>
         {
-            service !== "" && partner !== "" && groups.length > 0 &&
+            groups.length > 0 &&
             <Container className={classes.serviceContainer}>
                 {
-
                     getServiceContainer()
                 }
             </Container>

@@ -1,10 +1,10 @@
-import React, {useState} from 'react';
-import {Box, Button, Container, createStyles, Theme} from '@material-ui/core';
+import React from 'react';
+import {Box, Button, Container, createStyles} from '@material-ui/core';
 import {DatePickers} from "./DatePicker";
 import {makeStyles} from "@material-ui/core/styles";
 import {ServiceTypes} from "./ServiceTypes";
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
     createStyles({
         serviceContainer: {
             display: "flex",
@@ -40,8 +40,9 @@ export function ServiceContainer({group, createService, handleServiceEdit, handl
                     endDate={group.endDate}
                     service={group.serviceType}
                     handleDateEdit={handleDateEdit}
+                    groupId={group.groupId}
                 />
-                <Button onClick={addService} variant="outlined" color="primary">Add Service</Button>
+                <Button onClick={addService} variant="outlined" color="primary" href="">Add Service</Button>
             </Container>
             {
                 group.services.list.length > 0 &&
@@ -49,7 +50,6 @@ export function ServiceContainer({group, createService, handleServiceEdit, handl
                     {
                         group.services.list.map((activeService: any) => {
                             let servicePrice: number = 0;
-                            console.log(group.servicePriceMap[activeService.serviceId], "group.servicePriceMap[activeService.serviceId]")
                             if (group.servicePriceMap[activeService.serviceId]) {
                               servicePrice = group.servicePriceMap[activeService.serviceId];
                             }
