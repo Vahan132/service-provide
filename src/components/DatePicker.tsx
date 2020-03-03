@@ -11,7 +11,7 @@ export function DatePickers({startDate, endDate, service, handleDateEdit}: any) 
 
     const handleDateChange = (event: any) => {
         if (event.target.id === "startDate") {
-
+          
         }
         handleDateEdit()
     };

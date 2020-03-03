@@ -28,7 +28,7 @@ const useStyles = makeStyles(() =>
     }),
 );
 
-export function ServiceTypes({serviceList, activeService, groupId, handleServiceEdit}: any) {
+export function ServiceTypes({serviceList, activeService, servicePrice, groupId, handleServiceEdit}: any) {
     const classes = useStyles();
 
     const selectServiceType = (event: any) => {
@@ -38,7 +38,7 @@ export function ServiceTypes({serviceList, activeService, groupId, handleService
 
     const addServiceCount = (event: any) => {
         const inputValue: number = event.target.value;
-        handleServiceEdit(groupId, activeService.serviceId, "", inputValue);
+        handleServiceEdit(groupId, activeService.serviceId, activeService.name, inputValue);
     };
 
     return (
@@ -63,7 +63,7 @@ export function ServiceTypes({serviceList, activeService, groupId, handleService
                 </Select>
             </FormControl>
             <Input type="number" value={activeService.count} onChange={addServiceCount}/>
-            <Box component="div" className={classes.price}>Price: {activeService.servicePrice}</Box>
+            <Box component="div" className={classes.price}>Price: {servicePrice}</Box>
         </Container>
     );
 }

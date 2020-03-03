@@ -74,6 +74,7 @@ function App() {
             name: "",
             count: 0,
             serviceId: groupId + serviceGroup.services.list.length,
+            perPrice: null
         };
 
         serviceGroup.services.list.push(newService);
@@ -114,21 +115,40 @@ function App() {
 
         const editingService: any = editingGroup.services.list.find((value: any) => value.serviceId === serviceId);
         if (serviceName && serviceName !== "") {
+          console.log("change name")
             editingService.name = serviceName;
-        } else if (serviceCount) {
+        }
+        
+        if (serviceCount) {
+          console.log("change count")
             editingService.count = serviceCount;
         }
 
-        const servicePrice: number = editingGroup.serviceList.menu.find((value: any) => value.name = serviceName);
-        const totalPrice: number = 0;
+        console.log(serviceName, "serviceName")
+
+        let servicePrice: any = editingGroup.serviceList.menu.find((value: any) => {
+          return value.name === serviceName
+        }
+          );
+        editingGroup.servicePriceMap[serviceId] = editingService.count * servicePrice.perPrice;
+        let allServicesPrice: number = 0;
 
         for (let group of activeGroups) {
-            for (let service of group.services) {
-
+          let groupPrice: number = 0;
+          for (let service of group.services.list) {
+            if (service.serviceId === serviceId && !service.perPrice) {
+              service.perPrice = servicePrice.perPrice;
             }
+            if (service.count > 0) {
+              groupPrice += service.count * service.perPrice; 
+            }
+          }
+          group.groupPrice = groupPrice;
+          allServicesPrice += groupPrice;
         }
-        editingGroup.servicePriceMap[serviceId] = editingService.count * servicePrice;
 
+        debugger
+        setTotalPrice(allServicesPrice);
         setGroups(activeGroups);
     };
 
@@ -203,7 +223,7 @@ function App() {
             </Container>
         }
         <Container className={classes.endContainer}>
-            <Box component="div" className={classes.totalPrice}>Total Price</Box>
+      <Box component="div" className={classes.totalPrice}>Total Price: {totalPrice}</Box>
             <Button onClick={createOrder} variant="outlined" color="primary">Create Order</Button>
         </Container>
     </Container>

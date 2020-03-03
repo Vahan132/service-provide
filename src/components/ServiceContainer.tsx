@@ -26,14 +26,9 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export function ServiceContainer({group, createService, handleServiceEdit, handleDateEdit}: any) {
     const classes = useStyles();
-    const [groupServicesPrice, setGroupServicesPrice] = useState(0);
 
     const addService = () => {
         createService(group.groupId);
-    };
-
-    const calculateGroupServicesPrice = () => {
-
     };
 
     return (
@@ -53,11 +48,18 @@ export function ServiceContainer({group, createService, handleServiceEdit, handl
                 <Container className={classes.serviceContainer}>
                     {
                         group.services.list.map((activeService: any) => {
+                            let servicePrice: number = 0;
+                            console.log(group.servicePriceMap[activeService.serviceId], "group.servicePriceMap[activeService.serviceId]")
+                            if (group.servicePriceMap[activeService.serviceId]) {
+                              servicePrice = group.servicePriceMap[activeService.serviceId];
+                            }
+                            
                             return (
                                 <ServiceTypes
                                     key={activeService.serviceId}
                                     serviceList={group.serviceList}
                                     activeService={activeService}
+                                    servicePrice={servicePrice}
                                     groupId={group.groupId}
                                     handleServiceEdit={handleServiceEdit}
                                 />
@@ -66,7 +68,7 @@ export function ServiceContainer({group, createService, handleServiceEdit, handl
                     }
                 </Container>
             }
-            <Box component="div" className={classes.totalPrice}>Total Price</Box>
+            <Box component="div" className={classes.totalPrice}>Total Price: {group.groupPrice}</Box>
         </>
 );
 }
